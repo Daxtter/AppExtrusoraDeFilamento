@@ -14,7 +14,7 @@ export default function ControlPanel() {
   const [tempActual, setTempActual] = useState(0);
   const [tempDeseada, setTempDeseada] = useState(100);
   const [comenzar, setComenzar] = useState(false);
-  const [termino, setTermino] = useState(false);
+  const [termino, setTermino] = useState(true);
   const [running, setRunning] = useState(false);
   const [calentando, setCalentando] = useState(false);
 
@@ -29,6 +29,11 @@ export default function ControlPanel() {
 
   const countdownRef = useRef(null);
   const esPrimeraVez = useRef(true);
+  const runningRef = useRef(running);
+
+  useEffect(() => {
+    runningRef.current = running;
+  }, [running]);
 
   // Mantener vista sincronizada cuando no se está editando
   useEffect(() => {
@@ -44,19 +49,25 @@ export default function ControlPanel() {
         const parts = String(msg).split(",");
         if (!parts || parts.length === 0) return;
 
+        // Siempre actualizar tempActual
+        setTempActual(Number(parts[0]) || 0);
+
+        // Solo actualizar minutos/segundos si el proceso está corriendo.
+        // Usamos runningRef para evitar tener que poner `running` en el array de dependencias.
         if (esPrimeraVez.current) {
           esPrimeraVez.current = false;
-          setTempActual(Number(parts[0]) || 0);
-          
-          setMinutes(Number(parts[1]) || 0);
-          setSeconds(Number(parts[2]) || 0);
+          if (runningRef.current) {
+            setMinutes(Number(parts[1]) || 0);
+            setSeconds(Number(parts[2]) || 0);
+          }
           setComenzar(Boolean(Number(parts[3])));
           setCalentando(Boolean(Number(parts[4])));
           setTempDeseada(Number(parts[5]) || tempDeseada);
         } else {
-          setTempActual(Number(parts[0]) || 0);
-          setMinutes(Number(parts[1]) || 0);
-          setSeconds(Number(parts[2]) || 0);
+          if (runningRef.current) {
+            setMinutes(Number(parts[1]) || 0);
+            setSeconds(Number(parts[2]) || 0);
+          }
         }
       });
 
@@ -70,8 +81,13 @@ export default function ControlPanel() {
 
   // Controladores
   function handleStart() {
+    // ...existing code...
+console.log(`Hola: ${minutes} minutos, ${seconds} segundos`);
+// ...existing code...
     setTermino(false);
     PublicarElMensaje("esp32/control/mov", "1");
+    PublicarElMensaje("esp32/control/tiempo", `${minutes},${seconds}`);
+    //Agregar un delay de 200 ms
     setRunning(true);
     
   }
