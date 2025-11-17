@@ -85,8 +85,9 @@ export default function ControlPanel() {
 console.log(`Hola: ${minutes} minutos, ${seconds} segundos`);
 // ...existing code...
     setTermino(false);
-    PublicarElMensaje("esp32/control/mov", "1");
     PublicarElMensaje("esp32/control/tiempo", `${minutes},${seconds}`);
+    PublicarElMensaje("esp32/control/mov", "1");
+    
     //Agregar un delay de 200 ms
     setRunning(true);
     
@@ -151,10 +152,15 @@ console.log(`Hola: ${minutes} minutos, ${seconds} segundos`);
       {/* Temperatura deseada */}
       <label className="block text-sm text-green-800 mt-4">Temperatura Deseada</label>
       <input
-        type="number"
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
         className="w-full mt-1 p-2 border rounded-md"
-        value={tempDeseada}
-        onChange={(e) => setTempDeseada(Number(e.target.value))}
+        value={String(tempDeseada)}
+        onChange={(e) => {
+          const cleaned = e.target.value.replace(/[^0-9]/g, "");
+          setTempDeseada(Number(cleaned || 0));
+        }}
       />
 
       {/* Botones Calentar / Detener Calentamiento */}
@@ -162,7 +168,7 @@ console.log(`Hola: ${minutes} minutos, ${seconds} segundos`);
         <button
           onClick={handleHeatStart}
           disabled={calentando}
-          className={`flex-1 py-2 rounded-full font-medium text-white ${
+          className={`flex-1 py-1 px-3 rounded-full text-sm font-medium text-white ${
             calentando ? "bg-gray-400 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600"
           }`}
         >
@@ -172,7 +178,7 @@ console.log(`Hola: ${minutes} minutos, ${seconds} segundos`);
         <button
           onClick={handleHeatStop}
           disabled={!calentando}
-          className={`flex-1 py-2 rounded-full font-medium text-white ${
+          className={`flex-1 py-1 px-3 rounded-full text-sm font-medium text-white ${
             !calentando ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
           }`}
         >
@@ -181,10 +187,11 @@ console.log(`Hola: ${minutes} minutos, ${seconds} segundos`);
       </div>
 
       {/* Estado de calentamiento */}
+      {/*
       <p className="text-sm text-green-800 mt-3 font-semibold">
         {calentando ? "Calentando el filamento..." : " Enfriando / detenido."}
       </p>
-
+*/}
       {/* Cronómetro */}
       <div className="flex items-center justify-center my-6">
         <div className="w-44 h-44 rounded-full border-4 border-green-700 flex items-center justify-center">
@@ -233,12 +240,8 @@ console.log(`Hola: ${minutes} minutos, ${seconds} segundos`);
                   running ? "cursor-not-allowed text-gray-400" : "text-green-700 focus:ring-0"
                 }`}
               />
-
-              <span className="mx-1 text-2xl text-green-700">:</span>
-
-              <span className="ml-2 text-lg text-green-700">
-                .{String(milliseconds).padStart(2, "0")}
-              </span>
+              
+              
             </div>
 
             <div className="text-sm text-green-700 mt-1">Tiempo restante</div>
@@ -270,21 +273,24 @@ console.log(`Hola: ${minutes} minutos, ${seconds} segundos`);
 
         <button
           onClick={handleStop}
-          className={`px-4 py-2 rounded-full border text-red-600 border-red-400`}
+          className={`flex-1 py-2 rounded-full text-white bg-red-600 hover:bg-red-700`}
         >
           Detener
         </button>
       </div>
 
       {/* Estado general */}
-      <div className="mt-4 text-sm text-green-800">
-        <strong>Estado:</strong>{" "}
-        {(minutes && seconds) ? "Finalizado ✅" : comenzar ? "En proceso" : calentando ? "Calentando" : "Esperando"}
-      </div>
-
+      {/**
+       <div className="mt-4 text-sm text-green-800">
+         <strong>Estado:</strong>{" "}
+         {(minutes && seconds) ? "Finalizado ✅" : comenzar ? "En proceso" : calentando ? "Calentando" : "Esperando"}
+       </div>
+      */}
+      {/* 
       <div className="mt-4 text-xs text-green-700">
         Temperatura objetivo enviada: {tempDeseada}°C
       </div>
+*/}
     </div>
   );
 }
