@@ -1,17 +1,16 @@
 import mqtt from "mqtt";
-// 🔧 CONFIGURACIÓN DEL BROKER
-// Ejemplo: "mqtt://192.168.1.100:1883"  o  "mqtts://tu-broker.cloud:8883"
-const brokerUrl = "wss://test.mosquitto.org:8081/mqtt";
+const brokerUrl = "wss://3e4cbabcc345437a90cc4559b7af4b9d.s1.eu.hivemq.cloud:8884/mqtt"; // 10.42.0.1, ws://test.mosquitto.org:8080/mqtt
 
     // Publicar el mensaje MQTT
 const options = {
-  clientId: "nextjs_client_" + Math.random().toString(16).substr(2, 8),
+  clientId: "cliente_web_" + Math.random().toString(16).substr(2, 8),
+  username: "Superesp32",
+  password: "Esp32esp",
   clean: true,
-  connectTimeout: 4000,
+  connectTimeout: 10000,
   reconnectPeriod: 1000,
 };
 
-// 🚀 CONEXIÓN AL BROKER
 const mqttClient = mqtt.connect(brokerUrl, options);
 
 export function PublicarElMensaje(topic, message) {
