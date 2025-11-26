@@ -15,7 +15,7 @@ export async function POST(request) {
   return Response.json({ success: true, data: saved });
 }
 */
-
+/*
 let espData = {
   Temp: null,
   Termino: false,
@@ -39,3 +39,4 @@ export async function POST(request) {
     });
   }
 }
+*/
